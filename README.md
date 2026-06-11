@@ -35,3 +35,8 @@ All settings are saved **per user.**
 - Per-user settings and favorites
 - Automatically repairs malformed dashboard favorite data where possible
 - Safe dashboard-only favorite links in the toolbar menu
+
+## License
+
+This package is licensed under the GNU General Public License v2.0 only.
+See the LICENSE file for details.
