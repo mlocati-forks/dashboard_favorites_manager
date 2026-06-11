@@ -136,7 +136,7 @@
 .dashboard-favorites-manager-remove-confirm {
     align-items: center;
     display: inline-flex;
-    gap: 0.4rem;
+    gap: 20px;
 }
 
 .dashboard-favorites-manager-remove-confirm[hidden] {
