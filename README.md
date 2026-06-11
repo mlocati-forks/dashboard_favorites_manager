@@ -1,3 +1,5 @@
+[![Tests](https://github.com/concrete5-community/dashboard_favorites_manager/actions/workflows/tests.yml/badge.svg)](https://github.com/concrete5-community/dashboard_favorites_manager/actions/workflows/tests.yml)
+
 # Dashboard Favorites Manager: the Concrete CMS missing feature!!
 
 Dashboard Favorites Manager helps Concrete CMS users manage the existing dashboard favorites menu, which is not directly editable in the default interface.
