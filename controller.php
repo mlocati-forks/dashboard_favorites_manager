@@ -16,7 +16,7 @@ use Concrete\Core\View\View;
 
 class Controller extends Package
 {
-    public const PACKAGE_VERSION = '1.0.5';
+    public const PACKAGE_VERSION = '1.0.6';
     private const USER_CONFIG_TOOLBAR_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_ENABLED';
     private const USER_CONFIG_TOOLBAR_CLEAR_CACHE_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_CLEAR_CACHE_ENABLED';
     private const USER_CONFIG_TOOLBAR_LOGOUT_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_LOGOUT_ENABLED';
@@ -452,23 +452,95 @@ class Controller extends Package
     private function getToolbarFavoriteLinks()
     {
         $links = [];
-        try {
-            $navigation = Application::getFacadeApplication()->make(FavoritesNavigationFactory::class)->createNavigation();
-            foreach ($navigation->getItems() as $item) {
-                $url = $this->sanitizeFavoriteUrl((string) $item->getURL());
-                if ($url === null) {
+        $seenUrls = [];
+        foreach ($this->flattenDashboardFavoriteItems($this->getCurrentUserDashboardFavoriteItems()) as $item) {
+            $pageID = (int) ($item['pageID'] ?? 0);
+            $name = trim((string) ($item['name'] ?? ''));
+            $url = $this->sanitizeFavoriteUrl((string) ($item['url'] ?? ''));
+            $page = null;
+
+            if ($pageID > 0) {
+                $page = Page::getByID($pageID);
+                if (!$this->isDashboardPage($page) || !$this->canViewPage($page)) {
                     continue;
                 }
 
-                $links[] = [
-                    'name' => $item->getName(),
-                    'url' => $url,
-                ];
+                if ($url === null) {
+                    $url = $this->getPagePath($page);
+                }
+
+                if ($name === '') {
+                    $name = (string) $page->getCollectionName();
+                }
             }
-        } catch (\Throwable $e) {
+
+            if ($url === null || $url === '' || isset($seenUrls[$url])) {
+                continue;
+            }
+
+            $seenUrls[$url] = true;
+            $links[] = [
+                'name' => $name !== '' ? $name : $url,
+                'url' => $url,
+            ];
         }
 
         return $links;
+    }
+
+    private function getCurrentUserDashboardFavoriteItems()
+    {
+        $user = new User();
+        if (!$user->isRegistered()) {
+            return [];
+        }
+
+        $favorites = $user->config('DASHBOARD_FAVORITES');
+        if ($favorites !== null && $favorites !== '') {
+            $items = json_decode((string) $favorites, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($items)) {
+                return $items;
+            }
+        }
+
+        try {
+            return json_decode(json_encode($this->app->make(FavoritesNavigationFactory::class)->createNavigation()), true) ?: [];
+        } catch (\Throwable $e) {
+            return [];
+        }
+    }
+
+    private function flattenDashboardFavoriteItems(array $items)
+    {
+        $flattened = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) {
+                continue;
+            }
+
+            $flattened[] = $item;
+            if (!empty($item['children']) && is_array($item['children'])) {
+                $flattened = array_merge($flattened, $this->flattenDashboardFavoriteItems($item['children']));
+            }
+        }
+
+        return $flattened;
+    }
+
+    private function isDashboardPage($page)
+    {
+        if (!$page instanceof Page || $page->isError()) {
+            return false;
+        }
+
+        $path = $this->getPagePath($page);
+
+        return $path === '/dashboard' || strpos($path, '/dashboard/') === 0;
+    }
+
+    private function getPagePath(Page $page)
+    {
+        return method_exists($page, 'getCollectionPath') ? (string) $page->getCollectionPath() : '';
     }
 
     private function sanitizeFavoriteUrl($url)
