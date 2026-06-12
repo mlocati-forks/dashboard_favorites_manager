@@ -28,3 +28,4 @@ jobs:
         with:
           remove-files: |
             composer.json
+          publish-release: true
