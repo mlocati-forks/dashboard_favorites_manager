@@ -94,7 +94,7 @@
     <?php if (!empty($importReport) && !empty($importReport['rows']) && is_array($importReport['rows'])) { ?>
         <div class="dashboard-favorites-manager-import-report mb-4">
             <div class="dashboard-favorites-manager-import-report-heading">
-                <?php echo t('Import report'); ?>
+                <?php echo t('Import results'); ?>
             </div>
             <div class="dashboard-favorites-manager-import-report-summary">
                 <?php
