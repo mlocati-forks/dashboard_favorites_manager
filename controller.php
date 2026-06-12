@@ -16,7 +16,6 @@ use Concrete\Core\View\View;
 
 class Controller extends Package
 {
-    public const PACKAGE_VERSION = '1.0.6';
     private const USER_CONFIG_TOOLBAR_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_ENABLED';
     private const USER_CONFIG_TOOLBAR_CLEAR_CACHE_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_CLEAR_CACHE_ENABLED';
     private const USER_CONFIG_TOOLBAR_LOGOUT_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_LOGOUT_ENABLED';
@@ -26,7 +25,7 @@ class Controller extends Package
 
     protected $pkgHandle = 'dashboard_favorites_manager';
     protected $appVersionRequired = '9.2.0';
-    protected $pkgVersion = self::PACKAGE_VERSION;
+    protected $pkgVersion = '1.0.7';
 
     public function getPackageName()
     {

@@ -9,7 +9,6 @@ use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Controller\DashboardPageController;
 use Concrete\Core\Page\PageList;
 use Concrete\Core\User\User;
-use Concrete\Package\DashboardFavoritesManager\Controller as PackageController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,10 +27,11 @@ class FavoritesManager extends DashboardPageController
 
         $this->set('favoriteLinks', $this->getDashboardFavoriteLinks());
         $this->set('dashboardPageTree', $this->getDashboardPageTree());
-        $this->set('packageVersion', PackageController::PACKAGE_VERSION);
-        $this->set('toolbarFavoritesEnabled', $this->getManagerPackageController()->isToolbarFavoritesEnabled());
-        $this->set('toolbarClearCacheEnabled', $this->getManagerPackageController()->isToolbarClearCacheEnabled());
-        $this->set('toolbarLogoutEnabled', $this->getManagerPackageController()->isToolbarLogoutEnabled());
+        $packageController = $this->getManagerPackageController();
+        $this->set('packageVersion', $packageController->getPackageVersion());
+        $this->set('toolbarFavoritesEnabled', $packageController->isToolbarFavoritesEnabled());
+        $this->set('toolbarClearCacheEnabled', $packageController->isToolbarClearCacheEnabled());
+        $this->set('toolbarLogoutEnabled', $packageController->isToolbarLogoutEnabled());
         $this->set('canUseToolbarClearCache', $this->canUseToolbarClearCache());
         $this->set('toolbarSettingsToken', $this->app->make('token')->generate('dashboard_favorites_manager_toolbar_settings'));
         $this->set('toggleDashboardPageToken', $this->app->make('token')->generate('dashboard_favorites_manager_toggle_dashboard_page'));
