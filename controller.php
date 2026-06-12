@@ -20,7 +20,7 @@ class Controller extends Package
     private const USER_CONFIG_TOOLBAR_CLEAR_CACHE_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_CLEAR_CACHE_ENABLED';
     private const USER_CONFIG_TOOLBAR_LOGOUT_ENABLED = 'DASHBOARD_FAVORITES_MANAGER_TOOLBAR_LOGOUT_ENABLED';
     private const MANAGER_PATH = '/dashboard/welcome/favorites_manager';
-    private const DASHBOARD_FAVORITES_REPAIR_VERSION = '1';
+    private const DASHBOARD_FAVORITES_REPAIR_VERSION = '2';
     private const CONFIG_DASHBOARD_FAVORITES_REPAIR_VERSION = 'repair.dashboard_favorites.version';
 
     protected $pkgHandle = 'dashboard_favorites_manager';
@@ -300,7 +300,7 @@ class Controller extends Package
     {
         return [
             'name' => (string) $page->getCollectionName(),
-            'url' => self::MANAGER_PATH,
+            'url' => $this->getDashboardFavoriteUrlFromPath(self::MANAGER_PATH),
             'pageID' => (int) $page->getCollectionID(),
             'isActive' => false,
             'children' => [],
@@ -364,8 +364,31 @@ class Controller extends Package
             return '';
         }
 
+        $path = $this->stripApplicationBasePath($path);
+
         if (strpos($path, '/index.php/') === 0) {
             $path = substr($path, strlen('/index.php'));
+        } elseif ($path === '/index.php') {
+            $path = '/';
+        }
+
+        return $path;
+    }
+
+    private function stripApplicationBasePath($path)
+    {
+        $basePath = defined('DIR_REL') ? (string) DIR_REL : '';
+        if ($basePath === '' || $basePath === '/') {
+            return $path;
+        }
+
+        $basePath = '/' . trim($basePath, '/');
+        if ($path === $basePath) {
+            return '/';
+        }
+
+        if (strpos($path, $basePath . '/') === 0) {
+            return substr($path, strlen($basePath));
         }
 
         return $path;
@@ -455,7 +478,7 @@ class Controller extends Package
         foreach ($this->flattenDashboardFavoriteItems($this->getCurrentUserDashboardFavoriteItems()) as $item) {
             $pageID = (int) ($item['pageID'] ?? 0);
             $name = trim((string) ($item['name'] ?? ''));
-            $url = $this->sanitizeFavoriteUrl((string) ($item['url'] ?? ''));
+            $path = $this->sanitizeFavoriteUrl((string) ($item['url'] ?? ''));
             $page = null;
 
             if ($pageID > 0) {
@@ -464,8 +487,8 @@ class Controller extends Package
                     continue;
                 }
 
-                if ($url === null) {
-                    $url = $this->getPagePath($page);
+                if ($path === null) {
+                    $path = $this->getPagePath($page);
                 }
 
                 if ($name === '') {
@@ -473,14 +496,14 @@ class Controller extends Package
                 }
             }
 
-            if ($url === null || $url === '' || isset($seenUrls[$url])) {
+            if ($path === null || $path === '' || isset($seenUrls[$path])) {
                 continue;
             }
 
-            $seenUrls[$url] = true;
+            $seenUrls[$path] = true;
             $links[] = [
-                'name' => $name !== '' ? $name : $url,
-                'url' => $url,
+                'name' => $name !== '' ? $name : $path,
+                'url' => $this->getDashboardFavoriteUrlFromPath($path),
             ];
         }
 
@@ -566,6 +589,11 @@ class Controller extends Package
         return $path;
     }
 
+    private function getDashboardFavoriteUrlFromPath($path)
+    {
+        return (string) \URL::to((string) $path);
+    }
+
     private function normalizeDashboardFavoriteItems(array $items)
     {
         $normalized = [];
@@ -575,7 +603,14 @@ class Controller extends Package
             }
 
             $item['pageID'] = (int) ($item['pageID'] ?? 0);
-            $item['url'] = (string) ($item['url'] ?? '');
+            $path = $this->sanitizeFavoriteUrl($item['url'] ?? '');
+            if ($path === null && $item['pageID'] > 0) {
+                $page = Page::getByID($item['pageID']);
+                if ($this->isDashboardPage($page)) {
+                    $path = $this->getPagePath($page);
+                }
+            }
+            $item['url'] = $path === null ? '' : $this->getDashboardFavoriteUrlFromPath($path);
             $item['name'] = (string) ($item['name'] ?? '');
             $item['isActive'] = (bool) ($item['isActive'] ?? false);
 

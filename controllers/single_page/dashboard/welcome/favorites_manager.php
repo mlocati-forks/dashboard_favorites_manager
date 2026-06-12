@@ -253,13 +253,17 @@ class FavoritesManager extends DashboardPageController
                         $path = $this->getPagePath($page);
                     }
                 }
+                $urlPath = $this->sanitizeFavoriteUrl($url);
+                if ($urlPath === null && $path !== '') {
+                    $urlPath = $path;
+                }
 
                 $favorites[$selectionKey] = [
                     'selectionKey' => $selectionKey,
                     'pageID' => $pageID,
                     'name' => $name,
                     'path' => $path,
-                    'url' => $this->sanitizeFavoriteUrl($url) ?? '',
+                    'url' => $urlPath === null ? '' : $this->getDashboardFavoriteUrlFromPath($urlPath),
                 ];
             }
         }
@@ -748,7 +752,7 @@ class FavoritesManager extends DashboardPageController
 
     private function getPageUrl(Page $page)
     {
-        return $this->getPagePath($page);
+        return $this->getDashboardFavoriteUrlFromPath($this->getPagePath($page));
     }
 
     private function sanitizeFavoriteUrl($url)
@@ -782,11 +786,39 @@ class FavoritesManager extends DashboardPageController
             return '';
         }
 
+        $path = $this->stripApplicationBasePath($path);
+
         if (strpos($path, '/index.php/') === 0) {
             $path = substr($path, strlen('/index.php'));
+        } elseif ($path === '/index.php') {
+            $path = '/';
         }
 
         return $path;
+    }
+
+    private function stripApplicationBasePath($path)
+    {
+        $basePath = defined('DIR_REL') ? (string) DIR_REL : '';
+        if ($basePath === '' || $basePath === '/') {
+            return $path;
+        }
+
+        $basePath = '/' . trim($basePath, '/');
+        if ($path === $basePath) {
+            return '/';
+        }
+
+        if (strpos($path, $basePath . '/') === 0) {
+            return substr($path, strlen($basePath));
+        }
+
+        return $path;
+    }
+
+    private function getDashboardFavoriteUrlFromPath($path)
+    {
+        return (string) \URL::to((string) $path);
     }
 
     private function getCurrentUserDashboardFavoriteItems()
@@ -823,7 +855,14 @@ class FavoritesManager extends DashboardPageController
             }
 
             $item['pageID'] = (int) ($item['pageID'] ?? 0);
-            $item['url'] = $this->sanitizeFavoriteUrl($item['url'] ?? '') ?? '';
+            $path = $this->sanitizeFavoriteUrl($item['url'] ?? '');
+            if ($path === null && $item['pageID'] > 0) {
+                $page = Page::getByID($item['pageID']);
+                if ($this->isDashboardPage($page)) {
+                    $path = $this->getPagePath($page);
+                }
+            }
+            $item['url'] = $path === null ? '' : $this->getDashboardFavoriteUrlFromPath($path);
             $item['name'] = (string) ($item['name'] ?? '');
             $item['isActive'] = (bool) ($item['isActive'] ?? false);
 
