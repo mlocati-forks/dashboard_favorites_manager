@@ -8,6 +8,7 @@ use Concrete\Core\Package\PackageService;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Controller\DashboardPageController;
 use Concrete\Core\Page\PageList;
+use Concrete\Core\Permission\Checker;
 use Concrete\Core\User\User;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -29,6 +30,7 @@ class FavoritesManager extends DashboardPageController
         $this->set('dashboardPageTree', $this->getDashboardPageTree());
         $packageController = $this->getManagerPackageController();
         $this->set('packageVersion', $packageController->getPackageVersion());
+        $this->set('pendingPackageUpdate', $this->getPendingPackageUpdate($packageController));
         $this->set('toolbarFavoritesEnabled', $packageController->isToolbarFavoritesEnabled());
         $this->set('toolbarClearCacheEnabled', $packageController->isToolbarClearCacheEnabled());
         $this->set('toolbarLogoutEnabled', $packageController->isToolbarLogoutEnabled());
@@ -296,6 +298,33 @@ class FavoritesManager extends DashboardPageController
     private function getManagerPackageController()
     {
         return $this->app->make(PackageService::class)->getClass('dashboard_favorites_manager');
+    }
+
+    private function getPendingPackageUpdate($packageController)
+    {
+        $availableVersion = (string) $packageController->getPackageVersion();
+        if ($availableVersion === '') {
+            return null;
+        }
+
+        $packageEntity = $this->app->make(PackageService::class)->getByHandle($packageController->getPackageHandle());
+        if (!$packageEntity || !$packageEntity->isPackageInstalled()) {
+            return null;
+        }
+
+        $installedVersion = (string) $packageEntity->getPackageVersion();
+        if ($installedVersion === '' || !version_compare($availableVersion, $installedVersion, '>')) {
+            return null;
+        }
+
+        $permissions = new Checker();
+
+        return [
+            'installedVersion' => $installedVersion,
+            'availableVersion' => $availableVersion,
+            'updateUrl' => (string) \URL::to('/dashboard/extend/update'),
+            'canInstallPackages' => (bool) $permissions->canInstallPackages(),
+        ];
     }
 
     private function getDashboardPageTree()

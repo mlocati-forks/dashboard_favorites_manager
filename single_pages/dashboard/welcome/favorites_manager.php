@@ -13,6 +13,7 @@
 /** @var string $reorderFavoritesToken */
 /** @var string $importExportToken */
 /** @var array|null $importReport */
+/** @var array|null $pendingPackageUpdate */
 ?>
 
 <div class="dashboard-favorites-manager"
@@ -22,8 +23,30 @@
     data-dashboard-favorites-file-large-error="<?php echo h(t('The selected file is too large.')); ?>"
 >
     <div class="text-muted small dashboard-favorites-manager-version">
-        <strong><?php echo h(t('Version %s - Author: DigitMaster - Dedicated to mlocati, my Concrete CMS mentor', $packageVersion)); ?></strong>
+        <strong>
+            <?php if (!empty($pendingPackageUpdate)) { ?>
+                <?php echo h(t('Author: DigitMaster - Dedicated to mlocati, my Concrete CMS mentor')); ?>
+            <?php } else { ?>
+                <?php echo h(t('Version %s - Author: DigitMaster - Dedicated to mlocati, my Concrete CMS mentor', $packageVersion)); ?>
+            <?php } ?>
+        </strong>
     </div>
+    <?php if (!empty($pendingPackageUpdate)) { ?>
+        <div class="alert alert-warning dashboard-favorites-manager-pending-update">
+            <?php echo t(
+                'Warning: execute package update! The uploaded files are v. %2$s, upgrade is pending. Previous version registered is v. %1$s',
+                h((string) ($pendingPackageUpdate['installedVersion'] ?? '')),
+                h((string) ($pendingPackageUpdate['availableVersion'] ?? ''))
+            ); ?>
+            <?php if (!empty($pendingPackageUpdate['canInstallPackages']) && !empty($pendingPackageUpdate['updateUrl'])) { ?>
+                <a href="<?php echo h((string) $pendingPackageUpdate['updateUrl']); ?>">
+                    <?php echo t('Complete the package update from Concrete Dashboard.'); ?>
+                </a>
+            <?php } else { ?>
+                <?php echo t('Ask an administrator to complete the package update from Concrete Dashboard.'); ?>
+            <?php } ?>
+        </div>
+    <?php } ?>
     <div class="alert alert-info dashboard-favorites-manager-current-user-notice">
         <strong><?php echo t('Note:'); ?></strong> <?php echo t('These settings affect only the current user.'); ?>
     </div>
