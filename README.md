@@ -16,10 +16,32 @@ All settings are saved **per user.**
 
 ## Installation
 
-- Download the package and place the `dashboard_favorites_manager` folder inside your Concrete CMS packages directory.
-- In the Concrete CMS dashboard, go to System & Settings > Extend Concrete > Add Functionality.
-- Find Dashboard Favorites Manager in the list of available packages and click Install.
-- After installation, open Dashboard > Welcome > Dashboard Favorites Manager to manage your dashboard favorites and toolbar options.
+There are multiple ways to install this package.
+
+### With the Concrete CMS Marketplace
+
+See the [marketplace page](https://market.concretecms.com/products/dashboard-favorites-manager/44e04e58-6579-11f1-b89e-0e1cf28cdc53) of this package.
+
+### With composer
+
+1. run
+   ```sh
+   composer require concrete5-community/dashboard_favorites_manager
+   ```
+2. In the Concrete CMS dashboard, go to System & Settings > Extend Concrete > Add Functionality
+3. Find Dashboard Favorites Manager in the list of available packages and click Install.
+
+### Manually
+
+1. Go to the [releases page](https://github.com/concrete5-community/dashboard_favorites_manager/releases) page
+2. download the `dashboard_favorites_manager-v….zip` file attached to the releases
+3. extract it into the `packages` directory of your Concrete CMS installation
+4. In the Concrete CMS dashboard, go to System & Settings > Extend Concrete > Add Functionality
+5. Find Dashboard Favorites Manager in the list of available packages and click Install.
+
+## Usage
+
+After installation, open Dashboard > Welcome > Dashboard Favorites Manager to manage your dashboard favorites and toolbar options.
 
 ## Features
 
