@@ -1,3 +1,21 @@
+* text=auto eol=lf
+*.css text
+*.htm text
+*.html text
+*.js text
+*.json text
+*.md text
+*.php text
+*.scss text
+*.sh text
+*.svg text
+*.txt text
+*.TXT text
+*.yaml text
+*.yml text
+.gitattributes text
+.gitignore text
+
 /.* export-ignore
 /*.md export-ignore
 /INSTALL.TXT export-ignore
