@@ -125,9 +125,9 @@
                 $existingCount = (int) ($importReport['skippedExisting'] ?? 0);
                 $unavailableCount = (int) ($importReport['skippedInvalid'] ?? 0);
                 ?>
-                <span class="<?php echo $importedCount > 0 ? 'is-imported' : ''; ?>"><?php echo t('Imported: %s', $importedCount); ?></span>
-                <span class="<?php echo $existingCount > 0 ? 'is-existing' : ''; ?>"><?php echo t('Already existing: %s', $existingCount); ?></span>
-                <span class="<?php echo $unavailableCount > 0 ? 'is-unavailable' : ''; ?>"><?php echo t('Unavailable: %s', $unavailableCount); ?></span>
+                <span class="<?php echo $importedCount > 0 ? 'is-imported has-events' : ''; ?>"><?php echo t('Imported: %s', $importedCount); ?></span>
+                <span class="<?php echo $existingCount > 0 ? 'is-existing has-events' : ''; ?>"><?php echo t('Already existing, skipped: %s', $existingCount); ?></span>
+                <span class="<?php echo $unavailableCount > 0 ? 'is-unavailable has-events' : ''; ?>"><?php echo t('Unavailable: %s', $unavailableCount); ?></span>
             </div>
             <table class="table table-sm table-striped mb-0 dashboard-favorites-manager-import-report-table">
                 <thead>

@@ -265,6 +265,7 @@
 .dashboard-favorites-manager-import-report-heading {
     background: #f6f7f9;
     border-bottom: 1px solid #d7dce2;
+    color: #000;
     font-weight: 600;
     padding: 0.55rem 0.75rem;
 }
@@ -282,6 +283,10 @@
     color: #34495e;
     font-size: 0.82rem;
     padding: 0.2rem 0.45rem;
+}
+
+.dashboard-favorites-manager-import-report-summary span.has-events {
+    font-weight: 700;
 }
 
 .dashboard-favorites-manager-import-report-summary span.is-imported {
