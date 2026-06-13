@@ -156,7 +156,8 @@ class FavoritesManager extends DashboardPageController
             return $this->redirectToManager();
         }
 
-        $contents = file_get_contents($file->getPathname());
+        $fileHelper = $this->app->make('helper/file');
+        $contents = $fileHelper->getContents($file->getPathname());
         $payload = json_decode((string) $contents, true);
         if (json_last_error() !== JSON_ERROR_NONE || !is_array($payload)) {
             $this->flash('error', t('The selected file is not a valid favorites export.'));
