@@ -23,8 +23,7 @@ class FavoritesManager extends DashboardPageController
 
     public function view()
     {
-        $this->requireAsset('css', 'dashboard-favorites-manager/dashboard');
-        $this->requireAsset('javascript', 'dashboard-favorites-manager/dashboard');
+        $this->requireAsset('dashboard-favorites-manager/dashboard');
 
         $this->set('favoriteLinks', $this->getDashboardFavoriteLinks());
         $this->set('dashboardPageTree', $this->getDashboardPageTree());

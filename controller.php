@@ -46,6 +46,14 @@ class Controller extends Package
         $assetList->register('javascript', 'dashboard-favorites-manager/dashboard', 'assets/js/dashboard/welcome/favorites_manager.js', [], $this);
         $assetList->register('css', 'dashboard-favorites-manager/toolbar', 'assets/css/toolbar_favorites.css', [], $this);
         $assetList->register('javascript', 'dashboard-favorites-manager/toolbar', 'assets/js/toolbar_favorites.js', [], $this);
+        $assetList->registerGroup('dashboard-favorites-manager/dashboard', [
+            ['css', 'dashboard-favorites-manager/dashboard'],
+            ['javascript', 'dashboard-favorites-manager/dashboard'],
+        ]);
+        $assetList->registerGroup('dashboard-favorites-manager/toolbar', [
+            ['css', 'dashboard-favorites-manager/toolbar'],
+            ['javascript', 'dashboard-favorites-manager/toolbar'],
+        ]);
 
         if ($this->isToolbarFavoritesEnabled()) {
             Events::addListener('on_before_render', function ($event) {
@@ -78,8 +86,7 @@ class Controller extends Package
                 }
 
                 $view->addFooterItem('<script>window.DashboardFavoritesManagerToolbar=' . json_encode($toolbarConfig, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';</script>');
-                $view->requireAsset('css', 'dashboard-favorites-manager/toolbar');
-                $view->requireAsset('javascript', 'dashboard-favorites-manager/toolbar');
+                $view->requireAsset('dashboard-favorites-manager/toolbar');
             });
         }
     }
