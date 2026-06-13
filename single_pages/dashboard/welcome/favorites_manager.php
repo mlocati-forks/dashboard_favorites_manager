@@ -125,8 +125,8 @@
                 $unavailableCount = (int) ($importReport['skippedInvalid'] ?? 0);
                 ?>
                 <span class="<?php echo $importedCount > 0 ? 'is-imported has-events' : ''; ?>"><?php echo t('Imported: %s', $importedCount); ?></span>
-                <span class="<?php echo $existingCount > 0 ? 'is-existing has-events' : ''; ?>"><?php echo t('Already existing, skipped: %s', $existingCount); ?></span>
-                <span class="<?php echo $unavailableCount > 0 ? 'is-unavailable has-events' : ''; ?>"><?php echo t('Unavailable: %s', $unavailableCount); ?></span>
+                <span class="<?php echo $existingCount > 0 ? 'is-existing has-events' : ''; ?>"><?php echo t('Skipped, already existing: %s', $existingCount); ?></span>
+                <span class="<?php echo $unavailableCount > 0 ? 'is-unavailable has-events' : ''; ?>"><?php echo t('Skipped, unavailable: %s', $unavailableCount); ?></span>
             </div>
             <table class="table table-sm table-striped mb-0 dashboard-favorites-manager-import-report-table">
                 <thead>
@@ -141,8 +141,14 @@
                         $status = (string) ($row['status'] ?? '');
                         $statusClass = in_array($status, ['imported', 'existing', 'unavailable'], true) ? $status : 'unavailable';
                         $statusText = (string) ($row['message'] ?? '');
+                        if ($status === 'imported') {
+                            $statusText = t('Imported');
+                        }
                         if ($status === 'existing') {
-                            $statusText = t('Skipped');
+                            $statusText = t('Skipped, already existing');
+                        }
+                        if ($status === 'unavailable') {
+                            $statusText = t('Skipped, unavailable');
                         }
                         ?>
                         <tr>
