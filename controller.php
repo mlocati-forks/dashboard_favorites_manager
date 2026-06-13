@@ -293,6 +293,8 @@ class Controller extends Package
         try {
             $this->app->make(FavoritesNavigationCache::class)->clear();
         } catch (\Throwable $e) {
+            // Cache clearing is best-effort here. The favorite has already been saved,
+            // so a cache failure should not make installation/configuration fail.
         }
     }
 
@@ -449,6 +451,8 @@ class Controller extends Package
             try {
                 Application::getFacadeApplication()->make(FavoritesNavigationCache::class)->clear();
             } catch (\Throwable $e) {
+                // Cache clearing is best-effort after repairing stored favorites.
+                // If this fails, the repaired data should still remain saved.
             }
         }
     }

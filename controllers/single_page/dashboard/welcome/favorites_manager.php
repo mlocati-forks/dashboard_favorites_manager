@@ -696,6 +696,8 @@ class FavoritesManager extends DashboardPageController
         try {
             $this->app->make('session')->set(self::IMPORT_REPORT_SESSION_KEY, $report);
         } catch (\Throwable $e) {
+            // The import report is only used for optional UI feedback after redirect.
+            // Ignore session write failures so the import itself can still complete.
         }
     }
 
@@ -987,6 +989,8 @@ class FavoritesManager extends DashboardPageController
         try {
             $this->app->make(FavoritesNavigationCache::class)->clear();
         } catch (\Throwable $e) {
+            // Cache clearing is best-effort after saving favorites.
+            // A failure here should not block the user's requested change.
         }
     }
 }
