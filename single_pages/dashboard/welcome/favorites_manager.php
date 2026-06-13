@@ -19,7 +19,6 @@
 <div class="dashboard-favorites-manager"
     data-dashboard-favorites-order-error="<?php echo h(t('Unable to save favorite order.')); ?>"
     data-dashboard-page-search-empty-text="<?php echo h(t('No dashboard pages found.')); ?>"
-    data-dashboard-page-search-max-text="<?php echo h(t('Showing first 25 matches.')); ?>"
     data-dashboard-favorites-file-large-error="<?php echo h(t('The selected file is too large.')); ?>"
 >
     <div class="text-muted small dashboard-favorites-manager-version">
@@ -171,12 +170,15 @@
             </div>
         <?php } else { ?>
             <div class="dashboard-favorites-manager-page-search-control">
-                <input type="search" class="form-control form-control-sm" id="dashboard-favorites-manager-page-search" placeholder="<?php echo h(t('Search dashboard pages')); ?>" autocomplete="off">
+                <input type="text" class="form-control form-control-sm" id="dashboard-favorites-manager-page-search" placeholder="<?php echo h(t('Search dashboard pages')); ?>" autocomplete="off">
+                <button type="button" class="dashboard-favorites-manager-page-search-clear" title="<?php echo h(t('Clear search')); ?>" aria-label="<?php echo h(t('Clear search')); ?>" data-dashboard-page-search-clear hidden>
+                    &times;
+                </button>
             </div>
             <ul class="dashboard-favorites-manager-page-results" data-dashboard-page-results>
                 <?php foreach ($dashboardPageTree as $page) {
                     $isFavorite = !empty($page['isFavorite']);
-                    $searchText = strtolower($page['name'] . ' ' . $page['path']);
+                    $searchText = strtolower($page['name']);
                     ?>
                     <li class="dashboard-favorites-manager-page-result<?php echo $isFavorite ? ' is-favorite' : ''; ?>" data-dashboard-page-id="<?php echo (int) $page['id']; ?>" data-dashboard-page-search-text="<?php echo h($searchText); ?>">
                         <form method="post" action="<?php echo h($view->action('toggle_dashboard_page')); ?>" class="dashboard-favorites-manager-toggle-form">

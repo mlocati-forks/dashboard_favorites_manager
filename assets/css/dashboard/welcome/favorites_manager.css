@@ -353,17 +353,51 @@
 }
 
 .dashboard-favorites-manager-page-search-control {
+    align-items: center;
+    display: flex;
+    max-width: 50ch;
     padding: 0.75rem;
 }
 
 .dashboard-favorites-manager-page-search-control .form-control {
-    max-width: 50ch;
+    padding-right: 2rem;
+    width: 100%;
+}
+
+.dashboard-favorites-manager-page-search-clear {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: #6c757d;
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 1.1rem;
+    font-weight: 700;
+    height: 1.75rem;
+    justify-content: center;
+    line-height: 1;
+    margin-left: -2rem;
+    padding: 0;
+    width: 1.75rem;
+}
+
+.dashboard-favorites-manager-page-search-clear:hover,
+.dashboard-favorites-manager-page-search-clear:focus {
+    color: #0d6efd;
+}
+
+.dashboard-favorites-manager-page-search-clear[hidden] {
+    display: none;
 }
 
 .dashboard-favorites-manager-page-results {
     list-style: none;
     margin: 0;
+    max-height: 18rem;
+    max-width: 50ch;
+    overflow-y: auto;
     padding: 0;
+    width: 100%;
 }
 
 .dashboard-favorites-manager-page-result {

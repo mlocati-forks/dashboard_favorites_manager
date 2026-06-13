@@ -369,18 +369,18 @@
         var input = document.getElementById('dashboard-favorites-manager-page-search');
         var empty = document.querySelector('[data-dashboard-page-search-empty]');
         var items = document.querySelectorAll('[data-dashboard-page-search-text]');
+        var clearButton = document.querySelector('[data-dashboard-page-search-clear]');
         if (!input || !empty || !items.length) {
             return;
         }
 
         var query = normalizeSearchText(input.value);
         var shown = 0;
-        var maxResults = 25;
 
         for (var i = 0; i < items.length; i++) {
             var item = items[i];
             var text = item.getAttribute('data-dashboard-page-search-text') || '';
-            var matches = query.length > 0 && text.indexOf(query) !== -1 && shown < maxResults;
+            var matches = query.length > 0 && text.indexOf(query) !== -1;
             item.classList.toggle('is-visible', matches);
             if (matches) {
                 shown++;
@@ -392,10 +392,13 @@
         } else if (shown === 0) {
             empty.textContent = getManagerText('data-dashboard-page-search-empty-text');
         } else {
-            empty.textContent = shown === maxResults ? getManagerText('data-dashboard-page-search-max-text') : '';
+            empty.textContent = '';
         }
 
         empty.style.display = empty.textContent ? '' : 'none';
+        if (clearButton) {
+            clearButton.hidden = input.value.length === 0;
+        }
     }
 
     function openImportControls() {
@@ -547,6 +550,17 @@
             var fileInput = document.querySelector('[data-dashboard-favorites-import-file]');
             if (fileInput) {
                 fileInput.click();
+            }
+            return;
+        }
+
+        if (event.target.closest('[data-dashboard-page-search-clear]')) {
+            event.preventDefault();
+            var searchInput = document.getElementById('dashboard-favorites-manager-page-search');
+            if (searchInput) {
+                searchInput.value = '';
+                updateDashboardPageSearch();
+                searchInput.focus();
             }
             return;
         }
