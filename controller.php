@@ -73,7 +73,7 @@ class Controller extends Package
                 ];
                 if ($this->isToolbarClearCacheEnabled() && $this->canUseToolbarClearCache()) {
                     $toolbarConfig['clearCache'] = [
-                        'url' => (string) \URL::to('/dashboard/system/optimization/clearcache/do_clear'),
+                        'url' => (string) \URL::to(self::MANAGER_PATH, 'toolbar_clear_cache'),
                         'token' => $this->app->make('token')->generate('clear_cache'),
                         'label' => t('Clear cache now!'),
                     ];

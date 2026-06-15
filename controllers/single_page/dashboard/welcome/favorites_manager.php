@@ -4,6 +4,7 @@ namespace Concrete\Package\DashboardFavoritesManager\Controller\SinglePage\Dashb
 
 use Concrete\Core\Application\UserInterface\Dashboard\Navigation\FavoritesNavigationCache;
 use Concrete\Core\Application\UserInterface\Dashboard\Navigation\FavoritesNavigationFactory;
+use Concrete\Core\Cache\Command\ClearCacheCommand;
 use Concrete\Core\Package\PackageService;
 use Concrete\Core\Page\Page;
 use Concrete\Core\Page\Controller\DashboardPageController;
@@ -59,6 +60,33 @@ class FavoritesManager extends DashboardPageController
         $this->flash('success', t('Toolbar favorites settings saved.'));
 
         return $this->redirectToManager();
+    }
+
+    public function toolbar_clear_cache()
+    {
+        if (!$this->app->make('token')->validate('clear_cache', $this->request->request->get('ccm_token'))) {
+            $this->flash('error', $this->app->make('token')->getErrorMessage());
+
+            return new RedirectResponse($this->getToolbarClearCacheReturnUrl());
+        }
+
+        if (!$this->canUseToolbarClearCache()) {
+            $this->flash('error', t('You do not have permission to clear the cache.'));
+
+            return new RedirectResponse($this->getToolbarClearCacheReturnUrl());
+        }
+
+        $command = new ClearCacheCommand();
+        $command->setLogCacheClear(true);
+        $this->app->executeCommand($command);
+
+        $timestamp = time();
+        $config = $this->app->make('config');
+        $config->set('concrete.cache.last_cleared', $timestamp);
+        $config->save('concrete.cache.last_cleared', $timestamp);
+        $this->flash('success', t('Cached files removed.'));
+
+        return new RedirectResponse($this->getToolbarClearCacheReturnUrl());
     }
 
     public function toggle_dashboard_page()
@@ -774,6 +802,28 @@ class FavoritesManager extends DashboardPageController
         }
 
         return $this->canViewDashboardPage($page);
+    }
+
+    private function getToolbarClearCacheReturnUrl()
+    {
+        $referer = trim((string) $this->request->headers->get('referer'));
+        if ($referer !== '' && !preg_match('/[\x00-\x1F\x7F]/', $referer)) {
+            $parts = parse_url($referer);
+            if (is_array($parts)) {
+                $host = (string) ($parts['host'] ?? '');
+                if ($host === '' || strcasecmp($host, (string) $this->request->getHost()) === 0) {
+                    $path = (string) ($parts['path'] ?? '/');
+                    if ($path !== '' && $path[0] === '/') {
+                        $query = isset($parts['query']) ? '?' . $parts['query'] : '';
+                        $fragment = isset($parts['fragment']) ? '#' . $parts['fragment'] : '';
+
+                        return $path . $query . $fragment;
+                    }
+                }
+            }
+        }
+
+        return (string) \URL::to('/dashboard');
     }
 
     private function getPagePath(Page $page)
