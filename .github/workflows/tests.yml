@@ -53,8 +53,10 @@ jobs:
         name: Checkout
         uses: actions/checkout@v6
       -
-        name: Move repository
-        run: mv "$GITHUB_WORKSPACE" /app/packages/dashboard_favorites_manager
+        name: Copy repository
+        run: |
+          mkdir -p /app/packages/dashboard_favorites_manager
+          cp -R "$GITHUB_WORKSPACE"/* /app/packages/dashboard_favorites_manager/
       -
         name: Check code style
         working-directory: /app
