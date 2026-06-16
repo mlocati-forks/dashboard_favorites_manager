@@ -60,7 +60,7 @@ jobs:
       -
         name: Check code style
         working-directory: /app
-        run: ./concrete/bin/concrete c5:phpcs --ansi --no-interaction --no-cache check /app/packages/dashboard_favorites_manager
+        run: php-cs-fixer --ansi --no-interaction --dry-run --diff --using-cache=no --config=.php-cs-fixer.dist.php fix packages/dashboard_favorites_manager
 
   development-leftovers:
     name: Check Development Leftovers
